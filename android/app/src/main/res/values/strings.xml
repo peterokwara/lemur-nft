@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Lemur-nft</string>
+    <string name="button_text">MINT</string>
 </resources>
