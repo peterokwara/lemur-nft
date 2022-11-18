@@ -1,0 +1,6 @@
+{
+  "name": "Lemur NFT",
+  "description": "Lemur's are cool",
+  "image": "https://gateway.pinata.cloud/ipfs/QmdAoERmVHw3KhJi2S23tzT2weXFeJ6DmJJDM2uabhhHo4",
+  "attributes": [{ "trait_type": "tail", "value": "black and white" }]
+}
