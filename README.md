@@ -28,7 +28,7 @@
 A decentralized application that allows people to mint an NFT.
 
 <p align="center">
-  <img src="./assets/chrome_ODFMadKm4X.gif"/>
+  <img src="./assets/screenshot.jpg"/>
 </p>
 
 ### Technical
@@ -125,7 +125,7 @@ For any concerns, please open an [issue](https://github.com/peterokwara/lemur-nf
 
 ### Versions
 
-- Version 1.0 DATE 10/04/2022
+- Version 1.0 DATE 18/11/2022
 
 ### Contact Information
 
