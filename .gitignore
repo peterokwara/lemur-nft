@@ -1,2 +1,4 @@
 contract/node_modules/
 android/apikey.properties
+android/apikey.properties
+contract/build/
