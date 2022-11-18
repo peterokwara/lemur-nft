@@ -3,25 +3,19 @@ package com.example.lemur
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import org.web3j.abi.FunctionEncoder
-import org.web3j.abi.FunctionReturnDecoder
-import org.web3j.abi.TypeReference
-import org.web3j.abi.datatypes.Address
-import org.web3j.abi.datatypes.Function
-import org.web3j.abi.datatypes.Type
-import org.web3j.abi.datatypes.Utf8String
 import org.web3j.crypto.Bip32ECKeyPair
 import org.web3j.crypto.Bip32ECKeyPair.HARDENED_BIT
 import org.web3j.crypto.Credentials
 import org.web3j.crypto.MnemonicUtils
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.core.DefaultBlockParameterName
-import org.web3j.protocol.core.methods.request.Transaction
-import org.web3j.protocol.core.methods.response.EthCall
+import org.web3j.protocol.core.methods.response.EthGetBalance
 import org.web3j.protocol.core.methods.response.TransactionReceipt
 import org.web3j.protocol.websocket.WebSocketService
 import org.web3j.tx.gas.DefaultGasProvider
+import java.math.BigInteger
 import java.net.ConnectException
 
 
@@ -32,6 +26,7 @@ class MainActivity : AppCompatActivity() {
     var contractAddress: String = BuildConfig.CONTRACT_ADDRESS;
     var webSocketUrl: String = BuildConfig.WEB_SOCKET_URL;
     var seed: String = BuildConfig.SEED;
+    var tokenUri: String = BuildConfig.TOKEN_URI;
     private lateinit var credentials: Credentials;
 
 
@@ -40,15 +35,19 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
     }
 
+    /**
+     * Mint an nft when the mint button is clicked.
+     */
     fun mintNft(view: View) {
         try {
             loadCredentials();
-            val tokenURI = "ipfs://QmYueiuRNmL4MiA2GwtVMm6ZagknXnSpQnB3z2gWbz36hP"
             val web3j: Web3j = createWeb3j()
 
             val nft: LemurNFT = LemurNFT.load(contractAddress, web3j, credentials, DefaultGasProvider())
-            val result: TransactionReceipt = nft.mintNFT(walletAddress, tokenURI).send()
-            Log.e("Response", result.toString())
+            val transactionReceipt: TransactionReceipt = nft.mintNFT(walletAddress, tokenUri).send()
+
+            Log.e("Response", transactionReceipt.toString());
+            showResponse(transactionReceipt.toString());
 
         } catch (e: Exception){
             e.printStackTrace();
@@ -56,6 +55,20 @@ class MainActivity : AppCompatActivity() {
         return;
     }
 
+    /**
+     * Display the response as a toast notification.
+     */
+    private fun showResponse(response: String){
+
+        val duration  = Toast.LENGTH_LONG;
+        val toast = Toast.makeText(applicationContext, response, duration);
+        toast.show();
+
+    }
+
+    /**
+     * Create a web3j web socket instance from the web socket url.
+     */
     private fun createWeb3j(): Web3j {
         val webSocketService = WebSocketService(webSocketUrl, true)
         try {
@@ -66,17 +79,10 @@ class MainActivity : AppCompatActivity() {
         return Web3j.build(webSocketService)
     }
 
-    fun EthCall.getTokenCount(outputParams: List<TypeReference<Type<*>>>): Type<*>? {
-        return try {
-            FunctionReturnDecoder.decode(
-                value, outputParams
-            ).firstOrNull()
-        } catch (e: Exception) {
-            null
-        }
-    }
-
-    fun loadCredentials(){
+    /***
+     * Create credentials from a seed.
+     */
+    private fun loadCredentials(){
         val masterKeypair = Bip32ECKeyPair.generateKeyPair(MnemonicUtils.generateSeed(seed, ""))
         val path = intArrayOf(44 or HARDENED_BIT, 60 or HARDENED_BIT, HARDENED_BIT, 0, 0)
         val x = Bip32ECKeyPair.deriveKeyPair(masterKeypair, path)
